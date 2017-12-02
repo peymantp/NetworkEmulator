@@ -7,24 +7,33 @@ import datetime
 import random
 from packet import packet
 
-def connections(address, instruction):
-    drop_count=0
-    packet_count=0
+path = 'config'
+configFile = open(path,'r')
+configFileLines = configFile.readlines()
+emulatorIP = configFileLines[2].replace('\n','').split('=')[1]
+emulatorPort = configFileLines[3].replace('\n','').split('=')[1]
+dropRate = configFileLines[4].replace('\n','').split('=')[1]
+transmitterIP = configFileLines[5].replace('\n','').split('=')[1]
+transmitterPort = configFileLines[6].replace('\n','').split('=')[1]
+recieverIP = configFileLines[9].replace('\n','').split('=')[1]
+recieverPort = configFileLines[10].replace('\n','').split('=')[1]
 
-address = "localhost" #debug
-networkPort = 8000
-# Start - Connection initiation
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# Bind the socket to the port
-server_address = (address, networkPort)
-sock.bind(server_address)
+packetsRecieved = 0
+packetsDropped = 0
+packetsSent = 0
 
-#while True:
-#    print('Waiting to receive message')
-#    instruction, address = sock.recvfrom(1024)
-#    connectionThread = threading.Thread(target=connections, args=(address, instruction))
-#    connectionThread.start()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind((emulatorIP, emulatorPort))
+
+print("server emulator running")
+def transmitter(ip,port):
+    return
+
+def reciever(ip,port):
+    return
 
 while True:
-    transmitterIP = input("Enter transmitter IP>")
-    recieverIP = input("Enter reciever IP>")
+    transmitterThread = threading.Thread(target=transmitter,args=(transmitterIP,transmitterPort))
+    recieverThread = threading.Thread(target=reciever,args=(recieverIP,recieverPort))
+    transmitterThread.start()
+    recieverThread.start()
