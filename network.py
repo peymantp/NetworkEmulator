@@ -27,13 +27,14 @@ s.bind((emulatorIP, emulatorPort))
 
 print("server emulator running")
 def transmitter(ip,port):
+    
     return
 
 def reciever(ip,port):
     return
 
-while True:
-    transmitterThread = threading.Thread(target=transmitter,args=(transmitterIP,transmitterPort))
-    recieverThread = threading.Thread(target=reciever,args=(recieverIP,recieverPort))
-    transmitterThread.start()
-    recieverThread.start()
+
+transmitterThread = threading.Thread(target=transmitter,args=(transmitterIP,transmitterPort))
+recieverThread = threading.Thread(target=reciever,args=(recieverIP,recieverPort))
+transmitterThread.start()
+recieverThread.start()
