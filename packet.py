@@ -11,24 +11,20 @@ class packet:
         3 = EOT
     '''
     delim = "|:|"
-    packetType = 0
-    seqNum = 0
-    windowSize = 0
-    ackNum = 0
-    data = ""
-    def create(packetType, SeqNum, WindowSize, AckNum, Data=""):
-        packetType = packetType
-        seqNum     = SeqNum
-        windowSize = WindowSize
-        ackNum     = AckNum
-        data = Data #TODO implement sha1
 
-    def toString():
-        stringPacket = (str(packet.packetType) +packet.delim
-                        +str(packet.seqNum)    +packet.delim
-                        +str(packet.windowSize)+packet.delim
-                        +str(packet.ackNum)    +packet.delim
-                        +packet.data)
+    def __init__(self,packetType, SeqNum, WindowSize, AckNum, Data=""):
+        self.packetType = packetType
+        self.seqNum     = SeqNum
+        self.windowSize = WindowSize
+        self.ackNum     = AckNum
+        self.data = Data #TODO implement sha1
+
+    def toString(self):
+        stringPacket = (str(self.packetType) +packet.delim
+                        +str(self.seqNum)    +packet.delim
+                        +str(self.windowSize)+packet.delim
+                        +str(self.ackNum)    +packet.delim
+                        +self.data)
         return stringPacket
     
     @staticmethod
