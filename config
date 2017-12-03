@@ -1,7 +1,7 @@
 <!--network emulator-->
 ip=localhost
 port=8000
-dropRate=10
+
 <!--transmitter->
 ip=localhost
 port=7000
