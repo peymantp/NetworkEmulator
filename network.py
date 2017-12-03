@@ -1,19 +1,20 @@
 #! python3
+import argparse
+import datetime
+import hashlib
+import random
 import socket
 import threading
-import hashlib
 import time
-import datetime
-import random
-from packet import packet
-import argparse
+
 from config_helper import ConfigHelper as conf
+from packet import packet
 
 #Program argument initilisation
 parser=argparse.ArgumentParser(
     description='Network emulator for testing how diffrent protocols will behave with varing BER and packet delays.')
-parser.add_argument('BER', type=int, default=0, help='Bit Error Rate 0-100')
-parser.add_argument('packetDelay', type=int, default=0, help='Packet delay in milliseconds')
+parser.add_argument('-BER', type=int, default=0, help='Bit Error Rate 0-100')
+parser.add_argument('-packetDelay', type=int, default=0, help='Packet delay in milliseconds')
 args = parser.parse_args()
 # Error checking for program arguments
 if args.BER > 100 or args.BER < 0:
@@ -30,22 +31,50 @@ transmitterAddress = config.getTransmitter()
 packetsRecieved = 0
 packetsDropped = 0
 packetsSent = 0
+currentBER = 0
+EOF = False
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(emulatorAddress)
 
+def drop():
+    """
+    Drop packets if random generated number is equal or smaller than BER
+    Unless the current BER is higher than requested which means the program doesn't intentionnaly drop the packet
+    """
+    drop = false
+    currentBER = packetsDropped/packetsRecieved*100 #percentage of packets dropped
+    if currentBER >= args.BER:
+        return drop
+    ran = random.randint(1,101)
+    if ran < args.BER:
+        drop = True
+    return drop    
+
 def transmitter(data):
+
     return
 
 def reciever(data):
+
+    #IF data.EOF
+    #   EOF = True
     return
 
 print("server emulator running")
-while True:
+while not EOF:
     data, addr = s.recvfrom()
-    print("Comparing %s to transmitter %s" % (addr,transmitterAddress)
-    if addr == transmitterAddress:
-        transmitter(data)
-    print("Comparing %s to reciever %s" % (addr,recieverAddress))
-    if addr == recieverAddress:
-        transmitter(data)
+    packetsRecieved += 1
+    if drop():
+        packetsDropped += 1
+    else:    
+        print("Comparing %s to transmitter %s" % (addr,transmitterAddress)
+        if addr == transmitterAddress:
+            transmitter(data)
+            print("Comparing %s to reciever %s" % (addr,recieverAddress))
+        else if addr == recieverAddress:
+            transmitter(data)
+
+print("Packets recieved: " + packetsRecieved + "\n"
+    "Packets sent " + packetsSent + "\n"
+    "Packets droped " + packetsDropped)
