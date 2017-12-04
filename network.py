@@ -42,7 +42,7 @@ def drop():
     Drop packets if random generated number is equal or smaller than BER
     Unless the current BER is higher than requested which means the program doesn't intentionnaly drop the packet
     """
-    drop = false
+    drop = False
     currentBER = packetsDropped/packetsRecieved*100 #percentage of packets dropped
     if currentBER >= args.BER:
         return drop
@@ -52,13 +52,16 @@ def drop():
     return drop    
 
 def transmitter(data):
-
+    time.sleep(args.packetDelay)
+    s.sendto(data,recieverAddress)
     return
 
 def reciever(data):
-
-    #IF data.EOF
-    #   EOF = True
+    time.sleep(args.packetDelay)
+    s.sendto(data,transmitterAddress)
+    packetArray = packet.parse(data)
+    if packetArray[0] == 3:
+       EOF = True
     return
 
 print("server emulator running")
@@ -68,11 +71,11 @@ while not EOF:
     if drop():
         packetsDropped += 1
     else:    
-        print("Comparing %s to transmitter %s" % (addr,transmitterAddress)
-        if addr == transmitterAddress:
+        print("Comparing %s to transmitter %s" % (addr,transmitterAddress))
+        if addr[0] == transmitterAddress[0] and addr[1] == transmitterAddress[1]:
             transmitter(data)
             print("Comparing %s to reciever %s" % (addr,recieverAddress))
-        else if addr == recieverAddress:
+        elif addr[0] == recieverAddress[0] and addr[1] == recieverAddress[1]:
             transmitter(data)
 
 print("Packets recieved: " + packetsRecieved + "\n"
