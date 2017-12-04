@@ -15,12 +15,14 @@ emulatorAddress = config.getEmulartor()
 recieverAddress = config.getReciever()
 
 pac = packet(1,0,2048,1) #initil packet
-packetsRecieved = {}
-packetsACK = {}
+packetsRecieved = {} #used to check if a packet has been recieved more than once
+packetsACK = {} #used to check if an ACK has been sent more than once
 EOT = False
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(recieverAddress)
+
+#log file creation
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
 recieverLog = open("recieverLog"+time+".md",'x')
 
@@ -45,6 +47,8 @@ def duplicationCheckRecieved(packetArray):
 #def duplicationCheckSent(packet: packetObj):
 #    retuen
 
+filebuffer = []
+filename = 'NONAMERECIEVED'
 while not EOT:
     data = s.recv()
     packetData = packet.parse(data)
@@ -55,14 +59,23 @@ while not EOT:
     elif packetData[0] == 2: #if SOT packet
         if duplicationCheckRecieved(packetData): #if packet is a duplicate
             recieverLog.write("recieved duplicate**"+data+"**\n")
+            #TODO resend ack of SOT and log packet sent
         else:
             recieverLog.write("### SOT \n" + data)
-        _file = open(packetData[4],'x')
+            filename = 'R'+packetData[4]
+            #TODO send ack of SOT and log packet sent
     elif packetData[0] == 0: #if data packet
         if duplicationCheckRecieved(packetData): #if packet is a duplicate
             recieverLog.write("recieved duplicate**"+data+"**\n")
+            #TODO resend ack of packet and log packet sent
         else:
             recieverLog.write("recieved"+data+"\n")
-            _file.write(packetData[4])
+            filebuffer.insert(packetData[1],packetData[4])
+            #TODO send ack of packet and log packet sent
+
+#write to file from buffer
+with open(filename, 'x') as _file:
+    for chunk in filebuffer:
+        _file.write(chunk)
 
 sys.exit()
