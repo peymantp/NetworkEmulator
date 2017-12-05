@@ -53,7 +53,7 @@ def window(seq,size=WINDOWSIZE):
     for i in range(1, size):
         for each in iters[i:]:
             next(each, None)
-    return izip(*iters)
+    return zip(*iters)
 
 while not EOT:
     #SOT packet
