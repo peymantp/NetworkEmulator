@@ -97,10 +97,14 @@ while len(data) > 0: #send while data is not empty
             transmitterLog.write("recieved"+packetString+"\n")
             if pac[0] == '3':
                 print("Transmission confiremed complete")
+                transmitterLog.close()
+                exit()
             moveWindow(pac)
     except socket.timeout:
         print("Timeout error")
         print("Exiting program")
+        transmitterLog.close()
+        exit()
         break
 
 

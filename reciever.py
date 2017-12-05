@@ -62,7 +62,7 @@ def send(pacArray):
     data = pacString.encode()
     s.sendto(data,emulatorAddress)
 
-def EOT(pacArray):
+def EOTfunction(pacArray):
     pac = packet(3,pacArray[1],pacArray[2],pacArray[3])
     pacString = pac.toString()
     if duplicationCheckSent(pacArray):
@@ -86,7 +86,7 @@ while not EOT:
     if packetData[0] == '3': #if EOT packet
         print("### EOT \n" + data)
         recieverLog.write("### EOT \n" + data)
-        EOT(packetData)
+        EOTfunction(packetData)
         recieverLog.close()
         EOT = True
     elif packetData[0] == '0': #if data packet
@@ -94,12 +94,8 @@ while not EOT:
             print("recieved duplicate "+data+"\n")
             recieverLog.write("**recieved duplicate** "+data+"\n")
             send(packetData)
-            #TODO resend ack of packet and log packet sent
         else:
             print("recieved "+data+"\n")
             recieverLog.write("recieved "+data+"\n")
             send(packetData)
-            #TODO send ack of packet and log packet sent
-
-
-sys.exit()
+exit()
