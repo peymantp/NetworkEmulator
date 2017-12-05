@@ -52,12 +52,12 @@ def drop():
     return drop    
 
 def transmitter(data):
-    time.sleep(args.packetDelay)
+    time.sleep(args.packetDelay/1000)
     s.sendto(data,recieverAddress)
     return
 
 def reciever(data):
-    time.sleep(args.packetDelay)
+    time.sleep(args.packetDelay/1000)
     s.sendto(data,transmitterAddress)
     packetArray = packet.parse(data)
     if packetArray[0] == 3:
@@ -69,14 +69,17 @@ while not EOF:
     data, addr = s.recvfrom(1024)
     packetsRecieved += 1
     if drop():
+        print("Packet dropped")
         packetsDropped += 1
     else:    
         #print("Comparing %s to transmitter %s" % (addr,transmitterAddress))
-        if addr[0] == transmitterAddress[0] and addr[1] == transmitterAddress[1]:
+        #if addr[0] == transmitterAddress[0] and addr[1] == transmitterAddress[1]:
+        if addr[1] == transmitterAddress[1]:
             print("Packet from transmitter")
             transmitter(data)
         #print("Comparing %s to reciever %s" % (addr,recieverAddress))
-        if addr[0] == recieverAddress[0] and addr[1] == recieverAddress[1]:
+        #if addr[0] == recieverAddress[0] and addr[1] == recieverAddress[1]:
+        if addr[1] == recieverAddress[1]:
             print("Packet from reciever")
             reciever(data)
 
