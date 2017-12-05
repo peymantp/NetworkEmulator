@@ -14,7 +14,6 @@ config = conf("config")
 emulatorAddress = config.getEmulartor()
 recieverAddress = config.getReciever()
 
-pac = packet(1,0,2048,1) #initil packet
 packetsRecieved = {} #used to check if a packet has been recieved more than once
 packetsACK = {} #used to check if an ACK has been sent more than once
 EOT = False
@@ -43,16 +42,25 @@ def duplicationCheckRecieved(packetArray):
 
 def duplicationCheckSent(packetArray):
     duplicate = False
-    ack = packetArray[1]
+    ack = packetArray[3]
     packetsSentValue = packetsACK.get(ack)
     if packetsSentValue is None:
-        packetsSentValue[ack] = 1
+        packetsACK[ack] = 1
         return duplicate
     else:
         duplicate = True
         packetsACK[ack] = packetsSentValue + 1
         return duplicate
 
+def send(pacArray):
+    pac = packet(1,pacArray[1],pacArray[2],pacArray[3])
+    pacString = pac.toString()
+    if duplicationCheckSent(pacArray):
+        recieverLog.write("resending "+pacString+"\n")
+    else:
+        recieverLog.write("sending "+pacString+"\n")
+    data.encode()
+    s.sendto(data,emulatorAddress)
 
 #log file creation
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
@@ -61,28 +69,26 @@ filebuffer = []
 filename = 'recievedfile_'+time
 while not EOT:
     data = s.recv(1024)
-    print("recieved " + data)
+    data = data.decode()
     packetData = packet.parse(data)
     packetData = list(packetData)
     print(packetData)
     if packetData[0] == '3': #if EOT packet
         print("### EOT \n" + data)
         recieverLog.write("### EOT \n" + data)
-        s.sendto(data,emulatorAddress)
+        send(packetData)
         recieverLog.close()
         EOT = True
     elif packetData[0] == '0': #if data packet
         if duplicationCheckRecieved(packetData): #if packet is a duplicate
             print("recieved duplicate"+data+"\n")
             recieverLog.write("**recieved duplicate** "+data+"\n")
-            s.sendto(data,emulatorAddress)
-            recieverLog.write("resending "+data+"\n")
+            send(packetData)
             #TODO resend ack of packet and log packet sent
         else:
             print("recieved "+data+"\n")
             recieverLog.write("recieved "+data+"\n")
-            s.sendto(data,emulatorAddress)
-            recieverLog.write("sending "+data+"\n")
+            send(packetData)
             #TODO send ack of packet and log packet sent
 
 
