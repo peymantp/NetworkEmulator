@@ -85,10 +85,10 @@ while len(data) > 0: #send while data is not empty
                 transmitterLog.write("sent"+data[l]+"\n")
                 l = l + 1
         l = 0
-        transmitterSocket.settimeout(TIMEOUT)
 
         #listening for acks
         for var in list(range(len(window))):
+            transmitterSocket.settimeout(TIMEOUT/1000)
             recvdata = transmitterSocket.recv(1024)
             packetString = recvdata.decode()
             pac = packet.parse(packetString)
@@ -102,11 +102,7 @@ while len(data) > 0: #send while data is not empty
             moveWindow(pac)
     except socket.timeout:
         print("Timeout error")
-        print("Exiting program")
-        transmitterLog.close()
-        exit()
-        break
-
+        continue
 
 transmitterLog.close()
 print('finished')
