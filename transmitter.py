@@ -59,10 +59,13 @@ def EOT(pac):
 
 def moveWindow(pac):
     for var in range(len(window)):
-        tempPacket = data[var]
-        tempPacketArray = packet.parse(tempPacket)
-        if tempPacketArray[1] == pac[1]:
-            del data[var]
+        if len(data) < var+1: 
+            break
+        else:
+            tempPacket = data[var]
+            tempPacketArray = packet.parse(tempPacket)
+            if tempPacketArray[1] == pac[1]:
+                del data[var]
 
 packetCreation()
 l=0
@@ -70,6 +73,8 @@ while len(data) > 0: #send while data is not empty
     try:
         prepWindow()
         for var in list(range(len(window))):
+            if len(data) < var+1:
+                break
             parsedPacket = packet.parse(data[var])
             if parsedPacket[0] == '3' and len(data) == 1:
                 EOT(data[var])

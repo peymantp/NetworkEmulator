@@ -62,6 +62,16 @@ def send(pacArray):
     data = pacString.encode()
     s.sendto(data,emulatorAddress)
 
+def EOT(pacArray):
+    pac = packet(3,pacArray[1],pacArray[2],pacArray[3])
+    pacString = pac.toString()
+    if duplicationCheckSent(pacArray):
+        recieverLog.write("resending "+pacString+"\n")
+    else:
+        recieverLog.write("sending "+pacString+"\n")
+    data = pacString.encode()
+    s.sendto(data,emulatorAddress)
+
 #log file creation
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
 recieverLog = open("recieverLog"+time+".md",'w+')
@@ -76,7 +86,7 @@ while not EOT:
     if packetData[0] == '3': #if EOT packet
         print("### EOT \n" + data)
         recieverLog.write("### EOT \n" + data)
-        send(packetData)
+        EOT(packetData)
         recieverLog.close()
         EOT = True
     elif packetData[0] == '0': #if data packet
