@@ -10,57 +10,88 @@ from packet import packet
 config = conf("config")
 emulatorAddress = config.getEmulartor()
 transmitterAddress = config.getTransmitter()
-
+# creating sockets
+transmitterSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+transmitterSocket.bind(transmitterAddress)
+emulatorSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+emulatorSocket.bind(emulatorAddress)
 #log file
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
 recieverLog = open("recieverLog"+time+".md",'x')
 
-receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-receiveSocket.bind(transmitterAddress)
-
 WINDOWSIZE = 5
 RETRANSMIT = 200
-TIMEOUT = 2000
+PACKETLIMIT = 50
+TIMEOUT = RETRANSMIT*6
 BYTESREAD = 1024
-windowIndex = 0
 seqNumArray = []
 ackNumArray = []
 data = []
-seq = 0
+window = []
 ack = 0
 EOT = False
 
-#read file being sent and store inside window #
-filename = 'test.txt'
-with open(filename, 'r') as f:
-    while True:
-        buffer = f.read(BYTESREAD)
-        if not buffer: break
-        data.append()
-
+def packetCreation():
+    for var in list(range(PACKETLIMIT-1)):
+        pac = packet(0, var, WINDOWSIZE, var)
+        packetstring = pac.toString()
+        data.append(packetstring)
+    pac = packet(3, var, WINDOWSIZE, var)
+    packetstring = pac.toString()
+    print(packetstring+"\n") #debug line
+    data.append(packetstring)
 
 #https://stackoverflow.com/a/6822907
-def window(seq,size=WINDOWSIZE):
-    """
-    for each in window(range(6), 3):
-        print(list(each))
-[0, 1, 2]\n
-[1, 2, 3]\n
-[2, 3, 4]\n
-[3, 4, 5]\n
-    """
-    iters = tee(seq, size)
-    for i in range(1, size):
-        for each in iters[i:]:
-            next(each, None)
-    return zip(*iters)
+def prepWindow():
+    if len(data) < WINDOWSIZE:
+        i = len(data)
+        for var in list(range(len(data))):
+            window.append(data[var])
+    else:
+        i = WINDOWSIZE
+        for var in list(range(WINDOWSIZE)):
+            window.append(data[var])
 
-while not EOT:
-    #SOT packet
-    pac = packet(2, seq, WINDOWSIZE, 0, filename)
-    packetstring = pac.toString()
-    #https://www.youtube.com/watch?v=lk27yiITOvU
-    
+def EOT(pac):
+    _sendPacket = pac.encode()
+    emulatorSocket.send(_sendPacket)
+    #TODO log packet sent
+
+def moveWindow(pac):
+    for var in range(data.__len__):
+        if(str(data[var].seqNum) == pac[1]):
+            del data[var]
+
+packetCreation()
+l=0
+while not data: #send while data is not empty
+    try:
+        prepWindow()
+        for var in list(range(len(window))):
+            if data[var].packetType == 3 and data.__len__ == 1:
+                EOT(data[var])
+            else:
+                sendPacket = data[l].encode()
+                emulatorSocket.send(sendPacket)
+                #TODO log packet sent
+                l = l + 1
+        l = 0
+        emulatorSocket.settimeout(TIMEOUT)
+
+        #listening for acks
+        for var in list(range(len(window))):
+            data, addr = emulatorSocket.recv()
+            packetString = data.decode()
+            pac = packet.parse(packetString)
+            #TODO log packet recieved
+            if pac[0] == 3:
+                print("Transmission confiremed complete")
+            moveWindow(pac)
+
+    except socket.timeout as TIMEOUTERROR:
+        print(TIMEOUTERROR)
+        print("Exiting program")
+        break
 
 
 recieverLog.close()
