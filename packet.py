@@ -22,8 +22,9 @@ class packet:
         stringPacket = (str(self.packetType) +packet.delim
                         +str(self.seqNum)    +packet.delim
                         +str(self.windowSize)+packet.delim
-                        +str(self.ackNum)    +packet.delim
-                        +self.data)
+                        +str(self.ackNum)
+                        #+packet.delim+self.data
+                        )
         return stringPacket
     
     @staticmethod

@@ -65,9 +65,4 @@ while not EOT:
             filebuffer.insert(packetData[1],packetData[4])
             #TODO send ack of packet and log packet sent
 
-#write to file from buffer
-with open(filename, 'x') as _file:
-    for chunk in filebuffer:
-        _file.write(chunk)
-
 sys.exit()
