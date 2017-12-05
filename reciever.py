@@ -59,7 +59,7 @@ def send(pacArray):
         recieverLog.write("resending "+pacString+"\n")
     else:
         recieverLog.write("sending "+pacString+"\n")
-    data.encode()
+    data = pacString.encode()
     s.sendto(data,emulatorAddress)
 
 #log file creation

@@ -71,12 +71,14 @@ while not EOF:
     if drop():
         packetsDropped += 1
     else:    
-        print("Comparing %s to transmitter %s" % (addr,transmitterAddress))
+        #print("Comparing %s to transmitter %s" % (addr,transmitterAddress))
         if addr[0] == transmitterAddress[0] and addr[1] == transmitterAddress[1]:
+            print("Packet from transmitter")
             transmitter(data)
-        print("Comparing %s to reciever %s" % (addr,recieverAddress))
+        #print("Comparing %s to reciever %s" % (addr,recieverAddress))
         if addr[0] == recieverAddress[0] and addr[1] == recieverAddress[1]:
-            transmitter(data)
+            print("Packet from reciever")
+            reciever(data)
 
 print("Packets recieved: " + packetsRecieved + "\n"
     "Packets sent " + packetsSent + "\n"
