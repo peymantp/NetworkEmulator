@@ -7,7 +7,6 @@ class packet:
     packetType type:int,
         0 = Data,
         1 = ACK,
-        2 = SOT,
         3 = EOT
     '''
     delim = "|:|"

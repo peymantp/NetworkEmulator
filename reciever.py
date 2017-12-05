@@ -48,7 +48,7 @@ def duplicationCheckRecieved(packetArray):
 #    retuen
 
 filebuffer = []
-filename = 'NONAMERECIEVED'
+filename = 'recievedfile_'+time
 while not EOT:
     data = s.recv()
     packetData = packet.parse(data)
@@ -56,14 +56,6 @@ while not EOT:
         recieverLog.write("### EOT \n" + data)
         recieverLog.close()
         EOT = True
-    elif packetData[0] == 2: #if SOT packet
-        if duplicationCheckRecieved(packetData): #if packet is a duplicate
-            recieverLog.write("recieved duplicate**"+data+"**\n")
-            #TODO resend ack of SOT and log packet sent
-        else:
-            recieverLog.write("### SOT \n" + data)
-            filename = 'R'+packetData[4]
-            #TODO send ack of SOT and log packet sent
     elif packetData[0] == 0: #if data packet
         if duplicationCheckRecieved(packetData): #if packet is a duplicate
             recieverLog.write("recieved duplicate**"+data+"**\n")
