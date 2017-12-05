@@ -13,8 +13,6 @@ transmitterAddress = config.getTransmitter()
 # creating sockets
 transmitterSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 transmitterSocket.bind(transmitterAddress)
-emulatorSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-emulatorSocket.bind(emulatorAddress)
 #log file
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
 transmitterLog = open("transmitterLog"+time+".md",'x')
@@ -54,7 +52,7 @@ def prepWindow():
 
 def EOT(pac):
     _sendPacket = pac.encode()
-    emulatorSocket.send(_sendPacket)
+    transmitterSocket.sendto(_sendPacket,emulatorAddress)
     #log packet sent
     transmitterLog.write("sent"+data+"\n")
 
@@ -73,16 +71,16 @@ while not data: #send while data is not empty
                 EOT(data[var])
             else:
                 sendPacket = data[l].encode()
-                emulatorSocket.send(sendPacket)
+                transmitterSocket.sendto(sendPacket,emulatorAddress)
                 #log packet sent
                 transmitterLog.write("sent"+data+"\n")
                 l = l + 1
         l = 0
-        emulatorSocket.settimeout(TIMEOUT)
+        transmitterSocket.settimeout(TIMEOUT)
 
         #listening for acks
         for var in list(range(len(window))):
-            data, addr = emulatorSocket.recv()
+            data = transmitterSocket.recv(1024)
             packetString = data.decode()
             pac = packet.parse(packetString)
             pac = list(pac)
