@@ -15,7 +15,7 @@ transmitterSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 transmitterSocket.bind(transmitterAddress)
 #log file
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
-transmitterLog = open("transmitterLog"+time+".md",'x')
+transmitterLog = open("transmitterLog"+time+".md",'w+')
 
 WINDOWSIZE = 5
 RETRANSMIT = 200
