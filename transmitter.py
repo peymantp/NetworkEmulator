@@ -58,8 +58,10 @@ def EOT(pac):
     transmitterLog.write("sent"+pac+"\n")
 
 def moveWindow(pac):
-    for var in range(data.__len__):
-        if(str(data[var].seqNum) == pac[1]):
+    for var in range(len(window)):
+        tempPacket = data[var]
+        tempPacketArray = packet.parse(tempPacket)
+        if tempPacketArray[1] == pac[1]:
             del data[var]
 
 packetCreation()
@@ -69,25 +71,25 @@ while len(data) > 0: #send while data is not empty
         prepWindow()
         for var in list(range(len(window))):
             parsedPacket = packet.parse(data[var])
-            if parsedPacket[0] == '3' and data.__len__ == 1:
+            if parsedPacket[0] == '3' and len(data) == 1:
                 EOT(data[var])
             else:
                 sendPacket = data[l].encode()
                 transmitterSocket.sendto(sendPacket,emulatorAddress)
-                print("sent"+sendPacket+"\n")
-                transmitterLog.write("sent"+sendPacket+"\n")
+                print("sent"+data[l]+"\n")
+                transmitterLog.write("sent"+data[l]+"\n")
                 l = l + 1
         l = 0
         transmitterSocket.settimeout(TIMEOUT)
 
         #listening for acks
         for var in list(range(len(window))):
-            data = transmitterSocket.recv(1024)
-            packetString = data.decode()
+            recvdata = transmitterSocket.recv(1024)
+            packetString = recvdata.decode()
             pac = packet.parse(packetString)
             pac = list(pac)
-            print("recieved"+data+"\n")
-            transmitterLog.write("recieved"+data+"\n")
+            print("recieved"+packetString+"\n")
+            transmitterLog.write("recieved"+packetString+"\n")
             if pac[0] == '3':
                 print("Transmission confiremed complete")
             moveWindow(pac)
