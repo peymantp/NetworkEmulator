@@ -81,7 +81,7 @@ while not EOT:
         EOT = True
     elif packetData[0] == '0': #if data packet
         if duplicationCheckRecieved(packetData): #if packet is a duplicate
-            print("recieved duplicate"+data+"\n")
+            print("recieved duplicate "+data+"\n")
             recieverLog.write("**recieved duplicate** "+data+"\n")
             send(packetData)
             #TODO resend ack of packet and log packet sent

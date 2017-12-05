@@ -15,7 +15,7 @@ transmitterSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 transmitterSocket.bind(transmitterAddress)
 #log file
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
-transmitterLog = open("transmitterLog"+time+".md",'x')
+transmitterLog = open("transmitterLog"+time+".md",'w+')
 
 WINDOWSIZE = 5
 RETRANSMIT = 200
@@ -30,13 +30,14 @@ ack = 0
 EOT = False
 
 def packetCreation():
-    for var in list(range(PACKETLIMIT-1)):
+    for var in list(range(PACKETLIMIT)):
         pac = packet(0, var, WINDOWSIZE, var)
         packetstring = pac.toString()
         data.append(packetstring)
-    pac = packet(3, var, WINDOWSIZE, var)
+        #print(packetstring+"\n") #debug line
+    pac = packet(3, PACKETLIMIT, WINDOWSIZE, PACKETLIMIT)
     packetstring = pac.toString()
-    print(packetstring+"\n") #debug line
+    #print(packetstring+"\n") #debug line
     data.append(packetstring)
 
 #https://stackoverflow.com/a/6822907
@@ -63,17 +64,17 @@ def moveWindow(pac):
 
 packetCreation()
 l=0
-while not data: #send while data is not empty
+while len(data) > 0: #send while data is not empty
     try:
         prepWindow()
         for var in list(range(len(window))):
-            if data[var].packetType == 3 and data.__len__ == 1:
+            parsedPacket = packet.parse(data[var])
+            if parsedPacket[0] == '3' and data.__len__ == 1:
                 EOT(data[var])
             else:
                 sendPacket = data[l].encode()
                 transmitterSocket.sendto(sendPacket,emulatorAddress)
-                #log packet sent
-                transmitterLog.write("sent"+data+"\n")
+                transmitterLog.write("sent"+sendPacket+"\n")
                 l = l + 1
         l = 0
         transmitterSocket.settimeout(TIMEOUT)
@@ -88,9 +89,8 @@ while not data: #send while data is not empty
             if pac[0] == '3':
                 print("Transmission confiremed complete")
             moveWindow(pac)
-
-    except socket.timeout as TIMEOUTERROR:
-        print(TIMEOUTERROR)
+    except socket.timeout:
+        print("Timeout error")
         print("Exiting program")
         break
 
