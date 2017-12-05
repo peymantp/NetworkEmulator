@@ -17,7 +17,7 @@ emulatorSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 emulatorSocket.bind(emulatorAddress)
 #log file
 time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
-recieverLog = open("recieverLog"+time+".md",'x')
+transmitterLog = open("transmitterLog"+time+".md",'x')
 
 WINDOWSIZE = 5
 RETRANSMIT = 200
@@ -55,7 +55,8 @@ def prepWindow():
 def EOT(pac):
     _sendPacket = pac.encode()
     emulatorSocket.send(_sendPacket)
-    #TODO log packet sent
+    #log packet sent
+	transmitterLog.write("sent"+data+"\n")
 
 def moveWindow(pac):
     for var in range(data.__len__):
@@ -73,7 +74,8 @@ while not data: #send while data is not empty
             else:
                 sendPacket = data[l].encode()
                 emulatorSocket.send(sendPacket)
-                #TODO log packet sent
+                #log packet sent
+				transmitterLog.write("sent"+data+"\n")
                 l = l + 1
         l = 0
         emulatorSocket.settimeout(TIMEOUT)
@@ -83,7 +85,8 @@ while not data: #send while data is not empty
             data, addr = emulatorSocket.recv()
             packetString = data.decode()
             pac = packet.parse(packetString)
-            #TODO log packet recieved
+            #packet recieved
+			transmitterLog.write("recieved"+data+"\n")
             if pac[0] == 3:
                 print("Transmission confiremed complete")
             moveWindow(pac)
@@ -94,6 +97,6 @@ while not data: #send while data is not empty
         break
 
 
-recieverLog.close()
+transmitterLog.close()
 print('finished')
 exit()
