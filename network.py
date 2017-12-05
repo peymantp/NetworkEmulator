@@ -13,8 +13,8 @@ from packet import packet
 #Program argument initilisation
 parser=argparse.ArgumentParser(
     description='Network emulator for testing how diffrent protocols will behave with varing BER and packet delays.')
-parser.add_argument('-BER', type=int, default=0, help='Bit Error Rate 0-100')
-parser.add_argument('-packetDelay', type=int, default=0, help='Packet delay in milliseconds')
+parser.add_argument('BER', type=int, default=0, help='Bit Error Rate 0-100')
+parser.add_argument('packetDelay', type=int, default=0, help='Packet delay in milliseconds')
 args = parser.parse_args()
 # Error checking for program arguments
 if args.BER > 100 or args.BER < 0:
@@ -66,7 +66,7 @@ def reciever(data):
 
 print("server emulator running")
 while not EOF:
-    data, addr = s.recvfrom()
+    data, addr = s.recv()
     packetsRecieved += 1
     if drop():
         packetsDropped += 1
