@@ -54,8 +54,8 @@ def prepWindow():
 def EOT(pac):
     _sendPacket = pac.encode()
     transmitterSocket.sendto(_sendPacket,emulatorAddress)
-    #log packet sent
-    transmitterLog.write("sent"+data+"\n")
+    print("sent"+pac+"\n")
+    transmitterLog.write("sent"+pac+"\n")
 
 def moveWindow(pac):
     for var in range(data.__len__):
@@ -74,6 +74,7 @@ while len(data) > 0: #send while data is not empty
             else:
                 sendPacket = data[l].encode()
                 transmitterSocket.sendto(sendPacket,emulatorAddress)
+                print("sent"+sendPacket+"\n")
                 transmitterLog.write("sent"+sendPacket+"\n")
                 l = l + 1
         l = 0
@@ -85,6 +86,7 @@ while len(data) > 0: #send while data is not empty
             packetString = data.decode()
             pac = packet.parse(packetString)
             pac = list(pac)
+            print("recieved"+data+"\n")
             transmitterLog.write("recieved"+data+"\n")
             if pac[0] == '3':
                 print("Transmission confiremed complete")
