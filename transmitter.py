@@ -18,9 +18,8 @@ time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
 transmitterLog = open("transmitterLog"+time+".md",'w+')
 
 WINDOWSIZE = 5
-RETRANSMIT = 200
 PACKETLIMIT = 50
-TIMEOUT = RETRANSMIT*6
+TIMEOUT = 1500
 BYTESREAD = 1024
 seqNumArray = []
 ackNumArray = []

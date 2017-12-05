@@ -36,5 +36,5 @@ class packet:
         array[3] = ack number\n
         array[4] = data (if data packet)
         '''
-        packetArray = p.split(packet.delim)
+        packetArray = str(p).split(packet.delim)
         return packetArray

@@ -60,9 +60,8 @@ def reciever(data):
     time.sleep(args.packetDelay/1000)
     s.sendto(data,transmitterAddress)
     packetArray = packet.parse(data)
-    if packetArray[0] == 3:
+    if packetArray[0] == '3':
        EOF = True
-    return
 
 print("server emulator running")
 while not EOF:
@@ -71,16 +70,14 @@ while not EOF:
     if drop():
         print("Packet dropped")
         packetsDropped += 1
-    else:    
-        #print("Comparing %s to transmitter %s" % (addr,transmitterAddress))
-        #if addr[0] == transmitterAddress[0] and addr[1] == transmitterAddress[1]:
-        if addr[1] == transmitterAddress[1]:
+    else:
+        if addr[0] == transmitterAddress[0] and addr[1] == transmitterAddress[1]:
+        #if addr[1] == transmitterAddress[1]:
             print("Packet from transmitter")
             transmitter(data)
-        #print("Comparing %s to reciever %s" % (addr,recieverAddress))
-        #if addr[0] == recieverAddress[0] and addr[1] == recieverAddress[1]:
-        if addr[1] == recieverAddress[1]:
-            print("Packet from reciever")
+        if addr[0] == recieverAddress[0] and addr[1] == recieverAddress[1]:
+        #if addr[1] == recieverAddress[1]:
+            #print("Packet from reciever")
             reciever(data)
 
 print("Packets recieved: " + packetsRecieved + "\n"
