@@ -56,7 +56,7 @@ def EOT(pac):
     _sendPacket = pac.encode()
     emulatorSocket.send(_sendPacket)
     #log packet sent
-	transmitterLog.write("sent"+data+"\n")
+    transmitterLog.write("sent"+data+"\n")
 
 def moveWindow(pac):
     for var in range(data.__len__):
@@ -75,7 +75,7 @@ while not data: #send while data is not empty
                 sendPacket = data[l].encode()
                 emulatorSocket.send(sendPacket)
                 #log packet sent
-				transmitterLog.write("sent"+data+"\n")
+                transmitterLog.write("sent"+data+"\n")
                 l = l + 1
         l = 0
         emulatorSocket.settimeout(TIMEOUT)
