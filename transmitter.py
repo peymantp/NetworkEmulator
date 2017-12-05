@@ -83,8 +83,9 @@ while not data: #send while data is not empty
             data, addr = emulatorSocket.recv()
             packetString = data.decode()
             pac = packet.parse(packetString)
+            pac = list(pac)
             #TODO log packet recieved
-            if pac[0] == 3:
+            if pac[0] == '3':
                 print("Transmission confiremed complete")
             moveWindow(pac)
 

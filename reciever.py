@@ -22,9 +22,6 @@ EOT = False
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(recieverAddress)
 
-#log file creation
-time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
-recieverLog = open("recieverLog"+time+".md",'x')
 
 def duplicationCheckRecieved(packetArray):
     """
@@ -44,25 +41,49 @@ def duplicationCheckRecieved(packetArray):
         packetsRecieved[seq] = packetsRecievedValue + 1
         return duplicate
 
-#def duplicationCheckSent(packet: packetObj):
-#    retuen
+def duplicationCheckSent(packetArray):
+    duplicate = False
+    ack = packetArray[1]
+    packetsSentValue = packetsACK.get(ack)
+    if packetsSentValue is None:
+        packetsSentValue[ack] = 1
+        return duplicate
+    else:
+        duplicate = True
+        packetsACK[ack] = packetsSentValue + 1
+        return duplicate
 
+
+#log file creation
+time = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
+recieverLog = open("recieverLog"+time+".md",'w+')
 filebuffer = []
 filename = 'recievedfile_'+time
 while not EOT:
-    data = s.recv()
+    data = s.recv(1024)
+    print("recieved " + data)
     packetData = packet.parse(data)
-    if packetData[0] == 3: #if EOT packet
+    packetData = list(packetData)
+    print(packetData)
+    if packetData[0] == '3': #if EOT packet
+        print("### EOT \n" + data)
         recieverLog.write("### EOT \n" + data)
+        s.sendto(data,emulatorAddress)
         recieverLog.close()
         EOT = True
-    elif packetData[0] == 0: #if data packet
+    elif packetData[0] == '0': #if data packet
         if duplicationCheckRecieved(packetData): #if packet is a duplicate
-            recieverLog.write("recieved duplicate**"+data+"**\n")
+            print("recieved duplicate"+data+"\n")
+            recieverLog.write("**recieved duplicate** "+data+"\n")
+            s.sendto(data,emulatorAddress)
+            recieverLog.write("resending "+data+"\n")
             #TODO resend ack of packet and log packet sent
         else:
-            recieverLog.write("recieved"+data+"\n")
-            filebuffer.insert(packetData[1],packetData[4])
+            print("recieved "+data+"\n")
+            recieverLog.write("recieved "+data+"\n")
+            s.sendto(data,emulatorAddress)
+            recieverLog.write("sending "+data+"\n")
             #TODO send ack of packet and log packet sent
+
 
 sys.exit()

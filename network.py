@@ -66,7 +66,7 @@ def reciever(data):
 
 print("server emulator running")
 while not EOF:
-    data, addr = s.recv()
+    data, addr = s.recvfrom(1024)
     packetsRecieved += 1
     if drop():
         packetsDropped += 1
