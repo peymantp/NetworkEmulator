@@ -17,7 +17,7 @@ class ConfigHelper:
         emulatorIP = configFileLines[1].replace('\n','').split('=')[1]
         #Emulator IP should be in line 3
         emulatorPort = configFileLines[2].replace('\n','').split('=')[1]
-        return (emulatorIP,emulatorPort)
+        return (emulatorIP,int(emulatorPort))
 
     def getTransmitter(path):
         """ getting a tuple (ip,port) of the Transmitter"""
@@ -25,7 +25,7 @@ class ConfigHelper:
         transmitterIP = configFileLines[5].replace('\n','').split('=')[1]
         #Transmitter IP should be in line 7
         transmitterPort = configFileLines[6].replace('\n','').split('=')[1]
-        return (transmitterIP,transmitterPort)
+        return (transmitterIP,int(transmitterPort))
 
     def getReciever(path):
         """ getting a tuple (ip,port) of the Reciever"""
@@ -33,4 +33,4 @@ class ConfigHelper:
         recieverIP = configFileLines[8].replace('\n','').split('=')[1]
         #Reciever IP should be in line 10
         recieverPort = configFileLines[9].replace('\n','').split('=')[1]
-        return (recieverIP,recieverPort)
+        return (recieverIP,int(recieverPort))
